@@ -1,0 +1,72 @@
+package ${package.Controller};
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.van.common.domain.R;
+import ${package.Service}.${table.serviceName};
+import ${package.Entity}.${entity};
+import org.springframework.web.bind.annotation.RequestMapping;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+#if(${restControllerStyle})
+import org.springframework.web.bind.annotation.*;
+#else
+import org.springframework.stereotype.Controller;
+#end
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+
+/**
+* @author ${author}
+*/
+@Slf4j
+#if(${restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end")
+#if(${kotlin})
+class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
+
+#else #if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+    #end
+
+    @Autowired
+    private ${table.serviceName} ${table.entityPath}Service;
+
+    @GetMapping("{id}")
+    public R<?> get${entity}ById(@PathVariable Long id){
+        return R.ok(${table.entityPath}Service.getById(id));
+    }
+
+    @PostMapping
+    public R<?> get${entity}s(@RequestParam Integer current,@RequestParam Integer pageSize){
+        return R.ok(${table.entityPath}Service.page(new Page<>(current,pageSize)));
+    }
+
+    @PutMapping
+    public R<?> add${entity}(@RequestBody ${entity} ${table.entityPath}){
+        ${table.entityPath}Service.save(${table.entityPath});
+        return R.ok();
+    }
+
+    @DeleteMapping("{id}")
+    public R<?> delete${entity}(@PathVariable Long id){
+        ${table.entityPath}Service.removeById(id);
+        return R.ok();
+    }
+
+    @PatchMapping
+    public R<?> update${entity}(@RequestBody ${entity} ${table.entityPath}){
+        ${table.entityPath}Service.updateById(${table.entityPath});
+        return R.ok();
+    }
+
+
+}
+
+#end
